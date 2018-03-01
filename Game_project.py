@@ -197,19 +197,20 @@ def game_loop():
     #pygame.mixer.music.load('music/coffee_stains.wav')
     #pygame.mixer.music.play(-1)
 
-    x = (display_width * 0.45)
-    y = (display_height * 0.75)
+    car_x = 0
+    car_y = (display_height * 0.65)
 
     x_change = 0
     y_change = 0
     speed_change = 0
 
-    thing_width = 70
-    thing_height = 140
+    car_width = 70
+    car_height = 140
 
-    car_startx = random.randrange(100, 600)
-    car_starty = 300
-    car_speed = 4
+    enemy_car_Startx = random.randrange(100, 600)
+    enemy_car_Starty = 300
+    enemy_car_speed = 4
+    car_speed=3
 
     lineX = 400
     lineY = 0
@@ -245,22 +246,23 @@ def game_loop():
 
             #up key pressed does nothing and this is for if the key is up
             if event.type == pygame.KEYUP:
-                x_change = 0
+                y_change = 0
 
-        y_change += y_change
+        car_y += y_change
 
         game_display.fill(white)
 
         line(0, 100, display_width, 20, green)
         line(0,display_height - 100 ,display_width ,20 , green)
-
-        load_imageCar(car_startx, car_starty, 'images/carEnemy.png')
-        load_imageCar(x, y, 'images/carUser.png')
+#on each iteration the game is drawn again
+        load_imageCar(enemy_car_Startx, enemy_car_Starty, 'images/carEnemy.png')
+        load_imageCar(car_x,car_y, 'images/carUser.png')
         #x values should be updated and not y values by any +ve values
-        load_imageTrees(80,tree_y_top, 'images/h_trees_new.jpg')
-        #load_image(tree_y_bottom,650, 'images/trees.jpg')
+        load_imageTrees(tree_y_top,30 ,'images/Test_image.jpg')
+        load_imageTrees(tree_y_bottom,620, 'images/Test_image.jpg')
 
-        car_startx += car_speed
+        enemy_car_Startx += enemy_car_speed+car_speed
+        car_x+=car_speed
         lineX += line_speed
         tree_y_top += tree_speed
         tree_y_bottom += tree_speed
@@ -269,14 +271,18 @@ def game_loop():
         display(car_speed * 60, 5, 50, "Spd: %d px/s")
         display(score_game, 5, 5, "Final Score: %d")
 
-        if y > display_height + car_width + 150 or y<100:
+        if car_y > display_height + car_width + 150 or car_y<100:
             # 100 way background image
-            crash(x, y)
+            crash(car_x, car_y)
 
-        if car_starty > display_width:
-            car_starty = 0 - thing_width  # reset y
-            car_startx = random.randrange(170, display_height - thing_height - 150)
-            dodged += 1##refers to number of times the track has been dodged through
+        if enemy_car_Startx > display_width:
+            enemy_car_Startx = 0 # reset y
+            #enemy_car_Startx = random.randrange(170, display_height - car_height - 150)
+
+
+        if car_x >display_width:
+            car_x=0
+            dodged += 1  ##refers to number of times the track has been dodged through
             score_game += 1
             car_speed += 1 / 20  # accelarate
 
@@ -293,10 +299,10 @@ def game_loop():
             car_speed += 1 / 15
 
         ### check crash
-        if y < (car_starty + thing_height) and y + car_height >= car_starty + thing_height:
-            if x > car_startx and x < (car_startx + thing_width) or x + car_width > car_startx \
-                    and x + car_width < car_startx + thing_width:
-                crash(x, y)
+        if car_y < (enemy_car_Starty + car_height) and car_y + car_height >= enemy_car_Starty + car_height:
+            if car_x > enemy_car_Startx and car_x < (enemy_car_Startx + car_width) or car_x + car_width > enemy_car_Startx \
+                    and car_x + car_width < enemy_car_Startx + car_width:
+                crash(car_x, car_y)
 
         pygame.display.update()
         clock.tick(60)
