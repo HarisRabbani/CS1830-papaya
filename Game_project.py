@@ -2,13 +2,15 @@ import pygame
 import time
 import random
 
+
+#game name-papaya racers
 # display dimension
-display_width = 800
-display_height = 600
+display_width = 1250
+display_height = 700
 
 # car dimension
-car_width = 70
-car_height = 140
+car_width = 140
+car_height = 70
 
 
 # colors(rgd values)
@@ -29,7 +31,7 @@ clock = pygame.time.Clock()
 # game setup
 def game_init():
     pygame.init()
-    pygame.display.set_caption('Fast_and_Curious/Mohamed')
+    pygame.display.set_caption('Papaya Racers')
 
     # game_icon = pygame.image.load('carIcon.png')
     # pygame.display.set_icon(game_icon)
@@ -37,7 +39,7 @@ def game_init():
 
 # backgroundImg = pygame.image.load ('way.png')
 
-##############---------FuNCTIONS--------------##################
+##############---------FUNCTIONS--------------##################
 
 def display(count, x, y, message_format='Dodged: %d'):
     """display the score"""
@@ -51,13 +53,17 @@ def things(thingX, thingY, thingW, thingH, color):
     """draw random things (car or anything)"""
     pygame.draw.rect(game_display, color, [thingX, thingY, thingW, thingH])
 
-
+#to create the line
 def line(lineX, lineY, lineW, lineH, color):
     """draw way lines """
     pygame.draw.rect(game_display, color, [lineX, lineY, lineW, lineH])
 
 
-def load_image(x, y, image_name):
+def load_imageCar(x, y, image_name):
+    img = pygame.image.load(image_name)
+    game_display.blit(img, (x, y))
+
+def load_imageTrees(x, y, image_name):
     img = pygame.image.load(image_name)
     game_display.blit(img, (x, y))
 
@@ -160,8 +166,8 @@ def game_pause():
 
 
 def game_intro():
-    pygame.mixer.music.load("music/atlanta.wav")
-    pygame.mixer.music.play(-1)
+    #pygame.mixer.music.load("music/atlanta.wav")
+    ## pygame.mixer.music.play(-1)
 
     intro = True
 
@@ -177,8 +183,8 @@ def game_intro():
         textRect.center = ((display_width / 2), (display_height / 2))
         game_display.blit(textSurf, textRect)
 
-        button("GO !", 150, 450, 100, 50, green, bright_green, game_loop)
-        button("Quit", 550, 450, 100, 50, red, bright_red, quitgame)
+        button("GO !", 350, 450, 100, 50, green, bright_green, game_loop)
+        button("Quit", 800, 450, 100, 50, red, bright_red, quitgame)
 
         pygame.display.update()
         clock.tick(15)
@@ -188,8 +194,8 @@ def game_loop():
     global pause
     global score_game
 
-    pygame.mixer.music.load('music/coffee_stains.wav')
-    pygame.mixer.music.play(-1)
+    #pygame.mixer.music.load('music/coffee_stains.wav')
+    #pygame.mixer.music.play(-1)
 
     x = (display_width * 0.45)
     y = (display_height * 0.75)
@@ -201,9 +207,9 @@ def game_loop():
     thing_width = 70
     thing_height = 140
 
-    thing_startx = random.randrange(100, display_width - 200)
-    thing_starty = -600
-    thing_speed = 4
+    car_startx = random.randrange(100, 600)
+    car_starty = 300
+    car_speed = 4
 
     lineX = 400
     lineY = 0
@@ -211,9 +217,9 @@ def game_loop():
     lineH = 450
     line_speed = 10
 
-    tree_y_right = 600
-    tree_y_left = 300
-    tree_h = 600
+    tree_y_top = 10
+    tree_y_bottom = 650
+    tree_w = 600
     tree_speed = 10
 
     dodged = 0
@@ -229,64 +235,67 @@ def game_loop():
             if event.type == pygame.KEYDOWN:
 
                 if event.key == pygame.K_LEFT:
-                    x_change = -5
+                    y_change = -5
                 if event.key == pygame.K_RIGHT:
-                    x_change = 5
+                    y_change = +5
                 #pause key, along with all other relevant keys
                 if event.key == pygame.K_p:
                     pause = True
                     game_pause()
 
+            #up key pressed does nothing and this is for if the key is up
             if event.type == pygame.KEYUP:
                 x_change = 0
-        x += x_change
+
+        y_change += y_change
 
         game_display.fill(white)
 
-        line(150, 0, 20, display_height, red)
-        line(display_width - 150, 0, 20, display_height, red)
+        line(0, 100, display_width, 20, green)
+        line(0,display_height - 100 ,display_width ,20 , green)
 
-        load_image(thing_startx, thing_starty, 'images/car.png')
-        load_image(80, tree_y_left, 'images/trees.jpg')
-        load_image(700, tree_y_right, 'images/trees.jpg')
-        load_image(x, y, 'images/car1.png')
+        load_imageCar(car_startx, car_starty, 'images/carEnemy.png')
+        load_imageCar(x, y, 'images/carUser.png')
+        #x values should be updated and not y values by any +ve values
+        load_imageTrees(80,tree_y_top, 'images/h_trees_new.jpg')
+        #load_image(tree_y_bottom,650, 'images/trees.jpg')
 
-        thing_starty += thing_speed
-        lineY += line_speed
-        tree_y_left += tree_speed
-        tree_y_right += tree_speed
+        car_startx += car_speed
+        lineX += line_speed
+        tree_y_top += tree_speed
+        tree_y_bottom += tree_speed
 
         display(dodged, 5, 25)
-        display(thing_speed * 60, 5, 50, "Spd: %d px/s")
+        display(car_speed * 60, 5, 50, "Spd: %d px/s")
         display(score_game, 5, 5, "Final Score: %d")
 
-        if x > display_width - car_width - 150 or x < 150:
+        if y > display_height + car_width + 150 or y<100:
             # 100 way background image
             crash(x, y)
 
-        if thing_starty > display_height:
-            thing_starty = 0 - thing_height  # reset y
-            thing_startx = random.randrange(170, display_width - thing_width - 150)
-            dodged += 1
+        if car_starty > display_width:
+            car_starty = 0 - thing_width  # reset y
+            car_startx = random.randrange(170, display_height - thing_height - 150)
+            dodged += 1##refers to number of times the track has been dodged through
             score_game += 1
-            thing_speed += 1 / 20  # accelarate
+            car_speed += 1 / 20  # accelarate
 
-        if lineY > display_height:
-            lineY = 0 - lineH  # reset y
-            thing_speed += 1 / 15
+        if lineX > display_width:
+            lineX = 0 - lineH  # reset y
+            car_speed += 1 / 15
 
-        if tree_y_left > display_height:
-            tree_y_left = 0 - tree_h  # reset y
-            thing_speed += 1 / 15
+        if tree_y_top > display_width:
+            tree_y_top = 0 - tree_w  # reset y
+            car_speed += 1 / 15
 
-        if tree_y_right > display_height:
-            tree_y_right = 0 - tree_h  # reset y
-            thing_speed += 1 / 15
+        if tree_y_bottom > display_width:
+            tree_y_bottom = 0 - tree_w  # reset y
+            car_speed += 1 / 15
 
         ### check crash
-        if y < (thing_starty + thing_height) and y + car_height >= thing_starty + thing_height:
-            if x > thing_startx and x < (thing_startx + thing_width) or x + car_width > thing_startx \
-                    and x + car_width < thing_startx + thing_width:
+        if y < (car_starty + thing_height) and y + car_height >= car_starty + thing_height:
+            if x > car_startx and x < (car_startx + thing_width) or x + car_width > car_startx \
+                    and x + car_width < car_startx + thing_width:
                 crash(x, y)
 
         pygame.display.update()
